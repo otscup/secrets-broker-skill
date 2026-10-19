@@ -4,6 +4,12 @@ Portable instructions for any agent that supports **skills + remote MCP**. Hand 
 the folder or the `SKILL.md` and configure the MCP server once; after that it will
 use the broker automatically instead of asking you for passwords.
 
+GitHub: `https://github.com/otscup/secrets-broker-skill`
+
+Import `SKILL.md` directly through an agent's GitHub skill importer, or clone this
+repository and point the agent at the local folder. `mcp-stdio/` lets stdio-only
+clients use the remote MCP endpoint with browser OAuth.
+
 ## What it does
 
 The skill tells the agent to:
