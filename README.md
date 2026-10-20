@@ -6,6 +6,11 @@ use the broker automatically instead of asking you for passwords.
 
 GitHub: `https://github.com/otscup/secrets-broker-skill`
 
+相关仓库：
+
+- Docker / Node 参考实现：<https://github.com/otscup/secrets-broker>
+- Cloudflare Workers 版本：<https://github.com/otscup/secrets-broker-workers>
+
 Import `SKILL.md` directly through an agent's GitHub skill importer, or clone this
 repository and point the agent at the local folder. `mcp-stdio/` lets stdio-only
 clients use the remote MCP endpoint with browser OAuth.
