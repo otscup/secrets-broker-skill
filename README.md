@@ -15,6 +15,26 @@ Import `SKILL.md` directly through an agent's GitHub skill importer, or clone th
 repository and point the agent at the local folder. `mcp-stdio/` lets stdio-only
 clients use the remote MCP endpoint with browser OAuth.
 
+## Slash commands
+
+Each folder under `skills/` is one slash command, installed side by side with
+the existing `secrets-broker` skill:
+
+| Command | What it does |
+|---------|--------------|
+| `/broker` | Fetch a credential through the broker; prefer server-side use. |
+| `/broker-lite` | Fastest path: get the value and use it. |
+| `/broker-ultra` | Strict mode: prefer `http_request`, never widen scope alone. |
+| `/broker-approve` | Clear a pending approval request. |
+| `/broker-setup` | Point a client at the MCP endpoint and verify it. |
+| `/broker-help` | Reference card. |
+
+Copy a folder into your skill root to install just that one:
+
+```powershell
+Copy-Item -Recurse .\skills\broker-lite "$env:USERPROFILE\.agents\skills\"
+```
+
 ## What it does
 
 The skill tells the agent to:
