@@ -13,6 +13,9 @@ license: AGPL-3.0
 Get the value, use it, move on. No policy lecture.
 
 1. `get_secret` with `{ "name": "<item>" }`.
+   Login item (website / SSH / account / panel)? Use **`get_credential`**
+   instead — it returns username + password + TOTP. `get_secret` gives only the
+   password.
 2. If it returns `pending approval: <url>` — show the URL and stop until the
    human approves, then retry.
 3. Put the value in the command that needs it. Do not echo it, do not save it.

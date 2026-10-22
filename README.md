@@ -51,10 +51,14 @@ endpoint, and fall back to the broker web page for approvals.
 The skill tells the agent to:
 
 1. discover credentials with `list_secrets`;
-2. read with `get_secret`;
+2. pick the right read: `http_request` when calling an API (value never enters
+   the model), `get_credential` for a login item (username + password + TOTP),
+   `get_secret` for a plain secret;
 3. if approval is needed, send you the approval URL and retry;
-4. never ask you for the secret value, master password or API key;
-5. never print the value in chat/logs.
+4. if the item does not exist, create a one-time fill link with
+   `request_credential` instead of asking you to paste it;
+5. never ask you for the secret value, master password or API key;
+6. never print the value in chat/logs.
 
 The broker does the actual access control: agent-bound vault account, item/group
 allowlist, folder filter, grants, max reads, audit.

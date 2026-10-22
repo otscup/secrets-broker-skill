@@ -37,30 +37,42 @@ issued. Do not try to use an agent token against a different vault account.
   approval URL.
 - `get_secret` — return the value after approval (or immediately for an item
   marked no-approval). Use `{ "name": "item-name" }`.
+- `get_credential` — username + password + TOTP for a **login-type** item.
+  Use this, not `get_secret`, when the target is a website/SSH/account login.
 - `http_request` — make an HTTPS request with the secret injected server-side
   (header or bearer prefix). Use this instead of `get_secret` whenever possible;
   the model never receives the secret.
   Example: `{ "name": "tavily-api-key", "url": "https://api.tavily.com/search", "method": "POST", "body": "{\"query\":\"...\"}" }`.
+- `request_credential` — create a one-time link so the human can fill in a
+  credential the vault is missing; the broker stores it and grants access.
 
 ## Mandatory workflow
 
 When a task needs a credential:
 
 1. Call `list_secrets` if the exact item name is unknown.
-2. Call `get_secret` with the item name.
+2. Decide which read you need:
+   - **Login item** (website, SSH, account, panel) → `get_credential`, which
+     returns `{username, password, totp}`.
+   - **Plain secret** (API key, token, database URL) → `get_secret`.
+   - **Calling an API** → `http_request` instead of either, so the value never
+     enters the model.
 3. If the result says `pending approval: <url>`:
    - Give the user that URL and ask them to approve in the Secrets Broker UI;
-   - Retry `get_secret` after approval;
+   - Retry the same call after approval;
    - Never ask the user to type the secret.
 4. If the result says `vault locked`:
-   - Ask the human to unlock the broker UI (`https://sb.otscup.com`) or run the
-     broker's `unlock.mjs`;
+   - Ask the human to unlock the broker UI (`https://sb.otscup.com`);
+
    - Never ask for the Bitwarden master password.
 5. If the result says `agent is bound to another vault account`:
    - Do not retry with the same token; ask the operator to create/use an agent
      bound to the account they want, or share the item across accounts.
 6. If the result says `agent is not allowed to read this item`:
    - Stop; ask the operator to add the item/group to the agent's permissions.
+7. If the item does not exist at all:
+   - Call `request_credential` so the human can fill it in; do not ask for the
+     value in chat.
 
 ## Using the value safely
 
