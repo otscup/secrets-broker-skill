@@ -25,6 +25,7 @@ the existing `secrets-broker` skill:
 | `/broker` | Fetch a credential through the broker; prefer server-side use. |
 | `/broker-lite` | Fastest path: get the value and use it. |
 | `/broker-ultra` | Strict mode: prefer `http_request`, never widen scope alone. |
+| `/broker-write` | Store a credential in the broker instead of a local .env. |
 | `/broker-approve` | Clear a pending approval request. |
 | `/broker-setup` | Point a client at the MCP endpoint and verify it. |
 | `/broker-help` | Reference card. |
@@ -34,6 +35,16 @@ Copy a folder into your skill root to install just that one:
 ```powershell
 Copy-Item -Recurse .\skills\broker-lite "$env:USERPROFILE\.agents\skills\"
 ```
+
+## DSH plugin (human side)
+
+`dsh-plugin/` is a DSH Web plugin that puts approvals and credential filling
+inside DSH, next to the agent that is waiting. The skills above are the
+**agent** side (fetch over MCP); the plugin is the **human** side (approve,
+fill). See `dsh-plugin/README.md` and `dsh-plugin/LINKAGE.md`.
+
+The plugin is DSH-specific. Other clients take the skills and the MCP
+endpoint, and fall back to the broker web page for approvals.
 
 ## What it does
 

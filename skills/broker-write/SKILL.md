@@ -21,6 +21,19 @@ Save credentials where other agents can ask for them, and nowhere else.
    the item must be inside that agent's scope. If the broker refuses, say so
    and let the operator grant write access — do not look for another path.
 
+### If the write is refused
+
+The broker answers `agent is not allowed to write`. That is an operator
+decision, not something to work around. Tell the user exactly which agent needs
+what, and point them at the broker UI:
+
+- `https://sb.otscup.com` → **Agents** → pick the agent → ⋮ → tick
+  **允许写入** (write) and add the item or its group to the readable scope.
+- The item's group matters: an agent scoped by group can only write items in
+  that group.
+
+Do not retry with a different agent token to get the write through.
+
 ## Write
 
 ```
