@@ -47,6 +47,7 @@ headers = { Authorization = "Bearer <agent token>" }
 | `get_secret` | One value (needs approval unless no-approval). |
 | `get_credential` | Username + password + TOTP. |
 | `http_request` | Upstream response only; the secret is injected server-side. |
+| `explain_access` | Why this agent can or cannot use a credential, and what to try next. No value. |
 | `request_access` | Approval request / approval URL. |
 | `request_fill` | A browser executor types a `web` login into an allowed origin. No value to the model. |
 | `materialize` | Write one credential into one allowlisted file. Approval makes a job, not a read grant. |
