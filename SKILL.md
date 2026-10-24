@@ -43,6 +43,20 @@ issued. Do not try to use an agent token against a different vault account.
   (header or bearer prefix). Use this instead of `get_secret` whenever possible;
   the model never receives the secret.
   Example: `{ "name": "tavily-api-key", "url": "https://api.tavily.com/search", "method": "POST", "body": "{\"query\":\"...\"}" }`.
+- `request_fill` — ask a browser executor to type a stored website login into a
+  site, without the value ever reaching the model. Use
+  `{ "name": "ots-login", "origin": "https://example.com" }`. It answers with a
+  task id, or with an approval URL when a human has to agree first. It only works
+  for items classified as `web` with that exact origin in their fill policy.
+- `materialize` — ask to write one credential into one file the operator has
+  pre-approved, so a local process can read it without the model seeing the
+  value. Use `{ "name": "openai-key", "path": "/srv/app/secrets.env", "key": "OPENAI_API_KEY" }`.
+  The path must appear in 设置 → 安全 → 本地写入白名单; anything else is refused
+  before a human is asked. A `web` login can never be materialized. Approval
+  creates a one-shot job, not a read grant.
+- `materialize_redeem` — `{ "id": "<job id>" }` returns `{ path, key, value }`
+  exactly once, within ten minutes of approval. It needs `MCP_ALLOW_READ=1`,
+  because it does hand the value back.
 - `request_credential` — create a one-time link so the human can fill in a
   credential the vault is missing; the broker stores it and grants access.
 
