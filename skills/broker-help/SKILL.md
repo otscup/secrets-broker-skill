@@ -48,6 +48,9 @@ headers = { Authorization = "Bearer <agent token>" }
 | `get_credential` | Username + password + TOTP. |
 | `http_request` | Upstream response only; the secret is injected server-side. |
 | `request_access` | Approval request / approval URL. |
+| `request_fill` | A browser executor types a `web` login into an allowed origin. No value to the model. |
+| `materialize` | Write one credential into one allowlisted file. Approval makes a job, not a read grant. |
+| `materialize_redeem` | Redeem that job once within ten minutes. Needs `MCP_ALLOW_READ=1`. |
 | `request_credential` | One-time link for the human to fill a missing key. |
 
 ## Common answers

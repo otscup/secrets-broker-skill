@@ -171,6 +171,17 @@ curl -s https://sb.otscup.com/mcp \
 
 The value is returned to the calling agent; do not show it in chat.
 
+## Check the docs still match the broker
+
+```bash
+node test-skill-tools.mjs
+```
+
+Asserts that every MCP tool the broker advertises is named in
+`skills/broker-help/SKILL.md`. Set `SECRETS_BROKER_WORKERS` if the Worker repo is
+not a sibling directory. Run it after adding a tool — the reference card has
+silently lagged behind the broker before.
+
 ## Notes
 
 - OAuth tokens are bound to the vault account that was unlocked when issued.
