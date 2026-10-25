@@ -1,7 +1,7 @@
-// The reference card drifted: request_fill, materialize and materialize_redeem
-// shipped in the broker but never reached skills/broker-help/SKILL.md, so an
-// agent reading the card did not know it could ask for a fill or a file write.
-// This asserts every tool the broker advertises is named in the card.
+// The tool reference drifted once already: request_fill, materialize and
+// materialize_redeem shipped in the broker but never reached the reference card.
+// The full tool table now lives in exactly one place — the root SKILL.md — and
+// the other seven skills point at it instead of restating it.
 import fs from 'node:fs'
 
 const workers = process.env.SECRETS_BROKER_WORKERS ?? '../secrets-broker-workers'
@@ -16,15 +16,15 @@ const end = source.indexOf('name: \'http_request\'', start)
 const catalog = source.slice(start, end + 200)
 const tools = [...catalog.matchAll(/name: '([a-z_]+)'/g)].map((m) => m[1])
 
-const card = fs.readFileSync('skills/broker-help/SKILL.md', 'utf8')
+const card = fs.readFileSync('SKILL.md', 'utf8')
 const missing = tools.filter((name) => !card.includes('`' + name + '`'))
 
 const pass = (m) => console.log('PASS  ' + m)
 const fail = (name, detail) => { console.log('FAIL  ' + name + ' :: ' + detail); process.exitCode = 1 }
 
 if (tools.length < 9) fail('T1', 'found only ' + tools.length + ' tools: ' + tools.join(', '))
-else if (missing.length) fail('T1', 'the reference card does not name: ' + missing.join(', '))
-else pass('T1 the reference card names all ' + tools.length + ' broker tools')
+else if (missing.length) fail('T1', 'the tool table does not name: ' + missing.join(', '))
+else pass('T1 the tool table names all ' + tools.length + ' broker tools')
 
 // The card is a table; a row per tool keeps it readable. Guard the shape so a
 // rewrite cannot silently drop the column and still "contain the name".

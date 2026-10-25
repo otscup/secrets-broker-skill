@@ -177,10 +177,14 @@ The value is returned to the calling agent; do not show it in chat.
 node test-skill-tools.mjs
 ```
 
-Asserts that every MCP tool the broker advertises is named in
-`skills/broker-help/SKILL.md`. Set `SECRETS_BROKER_WORKERS` if the Worker repo is
-not a sibling directory. Run it after adding a tool — the reference card has
-silently lagged behind the broker before.
+Asserts that every MCP tool the broker advertises is named in the root
+`SKILL.md`, and that the tool table has one row per tool. Set
+`SECRETS_BROKER_WORKERS` if the Worker repo is not a sibling directory. Run it
+after adding a tool — the reference card has silently lagged behind the broker
+before.
+
+The full tool table lives only in the root `SKILL.md`; the seven `skills/*`
+folders point at it by path, so a new tool is a one-file edit plus this test.
 
 ## Notes
 
