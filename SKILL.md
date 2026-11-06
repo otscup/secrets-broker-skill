@@ -102,9 +102,11 @@ use one agent token against another vault account.
 
 ## Tools
 
-Full reference. Every other skill points here instead of repeating it.| Tool | Arguments | Returns |
+Full reference. Every other skill points here instead of repeating it.
+
+| Tool | Arguments | Returns |
 |---|---|---|
-| `list_secrets` | `filter?` (substring), `limit?` (default 200, max 500) | `[{name, kind: api\|web\|unclassified, noApproval, url}]`. No values. |
+| `list_secrets` | `filter?` (substring), `limit?` (default 200, max 500) | An **object**, not an array: `{"items": [{"id", "name", "kind": api\|web\|unclassified, "noApproval", "url", "requestable", "grant_status"}], "count", "hidden"}`. No values. A connection narrowed to a scope gets only these three fields; a full-scope connection (or one with admission disabled) also gets `hiddenCount: 0` and `totalCount`. |
 | `request_access` | `name` | Text: `access already allowed; use get_secret`, or `pending approval: <url>`, or a refusal message. Does not consume a read. |
 | `explain_access` | `name`, `action?` (`secret.read` default, `secret.use`, `secret.fill`, `secret.materialize`), `origin?` (fill), `url?` (use) | JSON: kind, account, the grant that exists, the rule that decided, what to try next. No value. |
 | `get_secret` | `name` | The value, as text. Needs `MCP_ALLOW_READ=1`. |
@@ -120,6 +122,15 @@ Full reference. Every other skill points here instead of repeating it.| Tool | A
 
 - `list_secrets` names must match the panel exactly, including spaces. A
   `web` name is visible but unreadable — that is not a typo.
+- `list_secrets` returns `{items, count, hidden}`, so parse `result.items[0]`,
+  **never** `result[0]`. Items outside the connection's admitted scope are never
+  named and never counted: a narrowed connection cannot learn how many items
+  exist elsewhere, and `hiddenCount` / `totalCount` are absent for it. Only a
+  full-scope connection (or one with admission disabled) receives
+  `hiddenCount: 0` and `totalCount`. `requestable` is true for every listed item;
+  `grant_status` (`granted`/`pending`/`none`/`muted`/`not_found`) says whether a
+  grant already exists, so `request_access` is only needed when it is not
+  `granted`.
 - `request_access` is the polite form of "may I?". Use it before retrying a
   denial so the operator sees one request, not a loop.
 - `explain_access` is the first call after any `not allowed`, `不能读明文` or
