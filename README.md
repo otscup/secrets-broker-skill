@@ -43,6 +43,11 @@ inside DSH, next to the agent that is waiting. The skills above are the
 **agent** side (fetch over MCP); the plugin is the **human** side (approve,
 fill). See `dsh-plugin/README.md` and `dsh-plugin/LINKAGE.md`.
 
+The plugin code is mirrored from the broker repository
+(`otscup/secrets-broker-workers`, `dsh-plugin/`), which is the single source of
+truth; this folder is the installable copy. Update the upstream copy first, then
+sync `lib/` and the plugin tests here.
+
 The plugin is DSH-specific. Other clients take the skills and the MCP
 endpoint, and fall back to the broker web page for approvals.
 

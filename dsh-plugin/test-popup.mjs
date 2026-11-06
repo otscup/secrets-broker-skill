@@ -11,19 +11,43 @@ const nodes = []
 class El {
   constructor(tag) { this.tagName = tag; this.children = []; this.style = {}; this.dataset = {}; this._html = ''; this.textContent = ''; this.classList = { _s: new Set(), add(x) { this._s.add(x) }, remove(x) { this._s.delete(x) }, toggle(x, f) { f ? this._s.add(x) : this._s.delete(x) }, contains(x) { return this._s.has(x) } } }
   setAttribute(k, v) { this[k] = v }
-  appendChild(c) { this.children.push(c); return c }
-  append(...c) { this.children.push(...c) }
-  get firstChild() { return this.children[0] }
+  appendChild(c) {
+    // Match the DOM: a node moves to its new parent instead of being cloned, or
+    // "while (parent.firstChild) other.appendChild(...)" never terminates.
+    for (const host of [doc?.body, ...nodes]) {
+      if (!host || !Array.isArray(host.children)) continue
+      const at = host.children.indexOf(c)
+      if (at >= 0) host.children.splice(at, 1)
+    }
+    this.children.push(c)
+    this._html += String(c.textContent ?? '')
+    return c
+  }
+  append(...c) { this.children.push(...c); for (const child of c) this._html += String(child.textContent ?? '') }
+  get firstChild() { return this.children[0] ?? null }
   set innerHTML(v) { this._html = v; this.children = [] }
   get innerHTML() { return this._html }
   remove() { this.removed = true }
   querySelector(sel) { return this.children.find((c) => c._matches === sel) ?? null }
+  // Enough of a selector engine for the sheet: .class, #id and TAG, descendants only.
+  querySelectorAll(selector) {
+    const hit = (n) => selector.startsWith('.') ? String(n.className || '').split(/\s+/).includes(selector.slice(1))
+      : selector.startsWith('#') ? n.id === selector.slice(1)
+      : n.tagName === selector.toLowerCase()
+    const found = []
+    const walk = (n) => { for (const c of n.children ?? []) { if (hit(c)) found.push(c); walk(c) } }
+    walk(this)
+    return found
+  }
+  replaceChildren(...c) { this.children = []; this._html = ''; for (const x of c) if (x) this.appendChild(x) }
   addEventListener() {}
 }
 const doc = {
   body: new El('body'),
   createElement: (t) => new El(t),
   getElementById: (id) => doc.body.children.find((c) => c.id === id) ?? null,
+  addEventListener() {},
+  removeEventListener() {},
 }
 globalThis.document = doc
 globalThis.window = { innerWidth: 1400 }
@@ -43,7 +67,9 @@ for (; i < client.length; i++) {
   else if (client[i] === '}') { depth--; if (depth === 0) { end = i; break } }
 }
 const body = client.slice(start, end + 1)
-const fn = new Function('ctx', body + '\n return startPopup(ctx)')
+// ensureCss lives outside the slice and the stub has no <head>; the stylesheet
+// is covered by the screenshot suite, so it is stubbed here.
+const fn = new Function('ctx', 'const ensureCss = () => {}\n' + body + '\n return startPopup(ctx)')
 
 const cleanup = fn({})
 const launcher = doc.body.children.find((c) => c.id === 'secrets-broker-launcher')
@@ -51,12 +77,22 @@ if (!launcher) { console.log('FAIL launcher missing'); process.exit(1) }
 console.log('PASS launcher present')
 
 launcher.onclick()
+// Walk the tree for a label: the real DOM searches descendants, and the stub's
+// flat _html cannot see text nested under a child element.
+const textOf = (node) => {
+  let out = String(node.textContent ?? '')
+  for (const child of node.children ?? []) out += ' ' + textOf(child)
+  return out
+}
 setTimeout(() => {
-  const overlay = doc.body.children.find((c) => c !== launcher)
+  const overlay = doc.getElementById('secrets-broker-sheet')
   if (!overlay) { console.log('FAIL empty panel did not open'); process.exit(1) }
-  const help = overlay.children.find((c) => c['data-help'])
-  if (!help) { console.log('FAIL help panel missing'); process.exit(1) }
-  console.log('PASS empty panel opens with help')
+  const all = textOf(overlay)
+  // The popup is useful when nothing is pending: a segmented control with the
+  // queue, recent activity and adding a key is always there.
+  const hasTabs = all.includes('待办') && all.includes('动态') && all.includes('添加')
+  if (!hasTabs) { console.log('FAIL tabs missing in: ' + all.slice(0, 120)); process.exit(1) }
+  console.log('PASS empty panel opens with tabs')
   cleanup()
   process.exit(0)
 }, 1200)

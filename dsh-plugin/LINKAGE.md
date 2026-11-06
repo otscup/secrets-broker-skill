@@ -96,6 +96,6 @@ broker 侧已有 `secret.read` / `secret.use` 审计事件，但插件端**没�
 ## 六、边界
 
 - 本轮**不改** `secrets-broker-workers` 主代码。
-- 插件改的是 `E:\DeepSeek workers\dsh-secrets-broker`（独立包），与主仓库解耦。
+- 插件实现以 `secrets-broker-workers` 仓库的 `dsh-plugin/` 为唯一真源；本仓库的 `dsh-plugin/` 是同步过来的安装副本，不再单独演化。
 - 技能改的是 `C:\Users\Administrator\.agents\skills\broker*`（独立目录）。
 - 插件与 broker 之间的任何**新增端点**都需主仓库改动，因此本轮只做不依赖新端点的部分。

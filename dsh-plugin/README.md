@@ -8,6 +8,15 @@ It talks to the broker over the same-origin routes the plugin host exposes, and
 authenticates to the broker with a plugin token (`DSH_PLUGIN_TOKEN` Worker
 secret).
 
+## Source of truth
+
+The implementation lives in the broker repository, in
+[`otscup/secrets-broker-workers` → `dsh-plugin/`](https://github.com/otscup/secrets-broker-workers/tree/main/dsh-plugin).
+This folder is the installable mirror shipped with the skills: change the code
+there and copy `lib/`, `cordis.patch.yml` and the three `test-*.mjs` files here
+in the same change. Do not edit `lib/` only here — that is how the two copies
+drifted before. `README.md` and `LINKAGE.md` stay skill-specific.
+
 ## What it does
 
 - **Right-bottom launcher** (🔐) is always present; click it for status and help.
