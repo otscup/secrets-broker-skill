@@ -41,6 +41,9 @@ DSH plugin; all three hit the same pending queue and the same decision endpoint.
      `/deny #1`. `/grants`, `/extend <agent> <item> <days|permanent>` and
      `/revoke <agent> <item> [action]` manage existing ones.
    - DSH plugin: the 待审批 cards, with 本次 / 24 小时 / 永久 / 拒绝.
+   - Any notification also carries a signed, single-use authorization link (30
+     minutes): opening it lands on that request's approval page and one submit
+     completes the approval.
 2. If the human asks you to pick a duration, choose by intent:
    - one-off command → **once**
    - a session of work → **24h**

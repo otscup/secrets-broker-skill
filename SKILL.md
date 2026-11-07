@@ -44,7 +44,10 @@ back to an older grant to let the call through.
 **Approvals.** When no capability covers a call, the broker records a pending
 request and answers with an approval URL. A human approves once/1h/24h/7d/always
 or denies. Approvals can arrive from the broker UI, Telegram/ntfy/Gotify/wxpush
-notification channels, or the DSH plugin. Operators may also set an item to
+notification channels, or the DSH plugin. Every pending notification also carries a
+signed, single-use authorization link (30 minutes): opening it lands on that request's
+approval page with the options prefilled, and one submit completes the approval.
+Operators may also set an item to
 `noApproval` (standing yes inside the agent's scope), or arm a time-boxed
 auto-approval rule for one agent. Retrying the same call after approval returns
 the value; asking again just queues nothing new.
